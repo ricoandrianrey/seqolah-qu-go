@@ -1,7 +1,10 @@
 package main
 
 import (
+	"fmt"
+	"log"
 	"net/http"
+	"os"
 	"seqolah-qu/controllers"
 	"seqolah-qu/database"
 	"seqolah-qu/repositories"
@@ -9,9 +12,17 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	// load .env file
+	err := godotenv.Load(".env")
+
+	if err != nil {
+		log.Fatalf("Error loading .env file")
+	}
+
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 
@@ -21,7 +32,12 @@ func main() {
 	schoolService := services.NewSchoolService(schoolRepo)
 	schoolController := controllers.NewSchoolController(r, schoolService)
 
+	r.Get("/check", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("Welcome Back!"))
+	})
+
 	r.Get("/{id}", schoolController.FindSchoolById())
 
-	http.ListenAndServe(":3000", r)
+	port := fmt.Sprintf(":%s", os.Getenv("APP_PORT"))
+	http.ListenAndServe(port, r)
 }

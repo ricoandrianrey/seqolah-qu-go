@@ -1,6 +1,7 @@
 package database
 
 import (
+	"os"
 	"seqolah-qu/entities"
 
 	"gorm.io/driver/postgres"
@@ -8,8 +9,8 @@ import (
 )
 
 func ConnectDatabase() *gorm.DB {
-	dsn := "host=0.0.0.0 user=postgres password=postgres dbname=seqolah-qu port=32771 TimeZone=Asia/Jakarta"
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	dbUrl := os.Getenv("DB_CONNECTION_URL")
+	db, err := gorm.Open(postgres.Open(dbUrl), &gorm.Config{})
 
 	if err != nil {
 		panic(err)
