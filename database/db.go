@@ -15,7 +15,13 @@ func ConnectDatabase() *gorm.DB {
 		panic(err)
 	}
 
-	db.AutoMigrate(&entities.School{})
+	db.AutoMigrate(
+		&entities.School{},
+		&entities.User{},
+		&entities.UserSchool{},
+		&entities.UserParent{},
+		&entities.UserStudent{},
+	)
 
 	return db
 }
