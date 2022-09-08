@@ -7,6 +7,7 @@ import (
 	"os"
 	"seqolah-qu/controllers"
 	"seqolah-qu/database"
+	"seqolah-qu/middlewares"
 	"seqolah-qu/repositories"
 	"seqolah-qu/services"
 
@@ -24,6 +25,7 @@ func main() {
 	}
 
 	r := chi.NewRouter()
+
 	r.Use(middleware.Logger)
 
 	db := database.ConnectDatabase()
@@ -33,10 +35,10 @@ func main() {
 	schoolController := controllers.NewSchoolController(r, schoolService)
 
 	r.Get("/check", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Welcome Back!"))
+		w.Write([]byte("Halo Dunia!"))
 	})
 
-	r.Get("/{id}", schoolController.FindSchoolById())
+	r.With(middlewares.JwtMiddleware).Get("/{id}", schoolController.FindSchoolById())
 
 	port := fmt.Sprintf(":%s", os.Getenv("APP_PORT"))
 	http.ListenAndServe(port, r)
