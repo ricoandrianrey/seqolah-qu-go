@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"context"
 	"net/http"
 	"os"
 
@@ -33,13 +34,20 @@ func JwtMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		_, err := jwtauth.VerifyToken(jwt, tokenString)
+		token, err := jwtauth.VerifyToken(jwt, tokenString)
 
 		if err != nil {
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		}
 
+		tokenData, _ := token.AsMap(context.Background())
+
+		var ctx context.Context
+		for key, v := range tokenData {
+			ctx = context.WithValue(r.Context(), key, v)
+		}
+
 		// Token is authenticated, pass it through
-		next.ServeHTTP(w, r)
+		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
