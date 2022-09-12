@@ -1,30 +1,27 @@
 package controllers
 
 import (
-	"encoding/json"
-	"net/http"
+	"context"
 	"seqolah-qu/services"
+	"seqolah-qu/types"
 	"strconv"
-
-	"github.com/go-chi/chi/v5"
 )
 
 type SchoolController struct {
-	r             *chi.Mux
 	schoolService *services.SchoolServiceImpl
 }
 
-func NewSchoolController(r *chi.Mux, schoolService *services.SchoolServiceImpl) *SchoolController {
-	return &SchoolController{r, schoolService}
+func NewSchoolController(schoolService *services.SchoolServiceImpl) *SchoolController {
+	return &SchoolController{schoolService}
 }
 
-func (c *SchoolController) FindSchoolById() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		paramId := chi.URLParam(r, "id")
-		id, _ := strconv.Atoi(paramId)
+func (c *SchoolController) FindSchoolById(data types.Request, ctx context.Context) (types.Response, error) {
+	id, _ := strconv.Atoi(data.Params("id"))
 
-		school := c.schoolService.FindSchoolById(id)
-		b, _ := json.Marshal(school)
-		w.Write(b)
-	}
+	resp := c.schoolService.FindSchoolById(id)
+
+	return types.Response{
+		Message: "Success get data",
+		Data:    resp,
+	}, nil
 }

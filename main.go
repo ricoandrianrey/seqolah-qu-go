@@ -10,6 +10,7 @@ import (
 	"seqolah-qu/middlewares"
 	"seqolah-qu/repositories"
 	"seqolah-qu/services"
+	"seqolah-qu/utils"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -32,13 +33,13 @@ func main() {
 
 	schoolRepo := repositories.NewSchoolRepository(db)
 	schoolService := services.NewSchoolService(schoolRepo)
-	schoolController := controllers.NewSchoolController(r, schoolService)
+	schoolController := controllers.NewSchoolController(schoolService)
 
 	r.Get("/check", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Halo Dunia!"))
 	})
 
-	r.With(middlewares.JwtMiddleware).Get("/{id}", schoolController.FindSchoolById())
+	r.With(middlewares.JwtMiddleware).Get("/{id}", utils.HandlerWrapper(schoolController.FindSchoolById))
 
 	port := fmt.Sprintf(":%s", os.Getenv("APP_PORT"))
 	http.ListenAndServe(port, r)
