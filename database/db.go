@@ -2,7 +2,7 @@ package database
 
 import (
 	"os"
-	"seqolah-qu/entities"
+	"seqolah-qu/entities/models"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -17,11 +17,11 @@ func ConnectDatabase() *gorm.DB {
 	}
 
 	db.AutoMigrate(
-		&entities.School{},
-		&entities.User{},
-		&entities.UserSchool{},
-		&entities.UserParent{},
-		&entities.UserStudent{},
+		&models.School{},
+		&models.User{},
+		&models.UserSchool{},
+		&models.UserParent{},
+		&models.UserStudent{},
 	)
 
 	return db

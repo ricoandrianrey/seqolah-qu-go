@@ -1,7 +1,7 @@
 package services
 
 import (
-	"seqolah-qu/entities"
+	"seqolah-qu/entities/models"
 	"seqolah-qu/repositories"
 )
 
@@ -17,7 +17,7 @@ func NewSchoolService(schoolRepo *repositories.SchoolRepositoryImpl) *SchoolServ
 	return &SchoolServiceImpl{schoolRepo}
 }
 
-func (s *SchoolServiceImpl) FindSchoolById(id int) *entities.School {
+func (s *SchoolServiceImpl) FindSchoolById(id int) *models.School {
 	school, _ := s.schoolRepo.FindById(id)
 	return &school
 }

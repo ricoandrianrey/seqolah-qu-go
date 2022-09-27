@@ -32,14 +32,22 @@ func main() {
 	db := database.ConnectDatabase()
 
 	schoolRepo := repositories.NewSchoolRepository(db)
+	userRepo := repositories.NewUserRepository(db)
+
 	schoolService := services.NewSchoolService(schoolRepo)
+	authService := services.NewAuthService(userRepo)
+
 	schoolController := controllers.NewSchoolController(schoolService)
+	authController := controllers.NewAuthController(authService)
 
 	r.Get("/check", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Halo Dunia!"))
 	})
 
-	r.With(middlewares.JwtMiddleware).Get("/{id}", utils.HandlerWrapper(schoolController.FindSchoolById))
+	r.With(middlewares.JwtMiddleware).Post("/{id}", utils.HandlerWrapper(schoolController.FindSchoolById))
+
+	r.Post("/auth/register", utils.HandlerWrapper(authController.Register))
+	r.Post("/auth/login", utils.HandlerWrapper(authController.Login))
 
 	port := fmt.Sprintf(":%s", os.Getenv("APP_PORT"))
 	http.ListenAndServe(port, r)
