@@ -7,7 +7,6 @@ import (
 	"os"
 	"seqolah-qu/controllers"
 	"seqolah-qu/database"
-	"seqolah-qu/middlewares"
 	"seqolah-qu/repositories"
 	"seqolah-qu/services"
 	"seqolah-qu/utils"
@@ -44,10 +43,13 @@ func main() {
 		w.Write([]byte("Halo Dunia!"))
 	})
 
-	r.With(middlewares.JwtMiddleware).Post("/{id}", utils.HandlerWrapper(schoolController.FindSchoolById))
-
 	r.Post("/auth/register", utils.HandlerWrapper(authController.Register))
 	r.Post("/auth/login", utils.HandlerWrapper(authController.Login))
+
+	r.Post("/school", utils.HandlerWrapper(schoolController.CreateSchool))
+	r.Put("/school/{id}", utils.HandlerWrapper(schoolController.UpdateSchool))
+	r.Get("/school/{id}", utils.HandlerWrapper(schoolController.FindSchoolById))
+	r.Delete("/school/{id}", utils.HandlerWrapper(schoolController.DeleteSchool))
 
 	port := fmt.Sprintf(":%s", os.Getenv("APP_PORT"))
 	http.ListenAndServe(port, r)

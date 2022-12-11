@@ -1,7 +1,6 @@
 package repositories
 
 import (
-	"seqolah-qu/entities/dto"
 	"seqolah-qu/entities/models"
 
 	"gorm.io/gorm"
@@ -9,8 +8,8 @@ import (
 
 type SchoolRepository interface {
 	FindById(id int)
-	Create(data dto.School)
-	Update(data interface{}, id int)
+	Create(data models.School)
+	Update(data models.School, id int)
 	Delete(id int)
 }
 
@@ -36,8 +35,15 @@ func (r *SchoolRepositoryImpl) Create(data models.School) (models.School, error)
 	return data, err
 }
 
+func (r *SchoolRepositoryImpl) Update(data models.School, id int) (int, error) {
+	resp := r.db.Where("ID = ?", uint(id)).Updates(&data)
+
+	return int(resp.RowsAffected), resp.Error
+}
+
 func (r *SchoolRepositoryImpl) Delete(id int) (int, error) {
-	resp := r.db.Delete(&models.User{}, id)
+	var school models.School
+	resp := r.db.Delete(&school, id)
 
 	return int(resp.RowsAffected), resp.Error
 }
