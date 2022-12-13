@@ -1,7 +1,7 @@
 package models
 
 import (
-	"fmt"
+	"seqolah-qu/helpers"
 	"seqolah-qu/types"
 	"time"
 
@@ -9,8 +9,8 @@ import (
 )
 
 type User struct {
-	Id        int            `json:"id" gorm:"primaryKey;autoIncrement"`
-	SchoolId  int            `json:"school_id"`
+	Id int `json:"id" gorm:"primaryKey;autoIncrement"`
+	// SchoolId  int            `json:"school_id"`
 	Email     string         `json:"email" gorm:"type:varchar;uniqueIndex"`
 	Phone     string         `json:"phone" gorm:"type:varchar(20)"`
 	Password  string         `json:"password" gorm:"type:varchar"`
@@ -25,6 +25,6 @@ type User struct {
 }
 
 func (u *User) BeforeCreate(tx *gorm.DB) error {
-	fmt.Println("before create")
+	u.Password = helpers.GenerateHashPassword(u.Password)
 	return nil
 }
