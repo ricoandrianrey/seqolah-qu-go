@@ -3,6 +3,8 @@ package services
 import (
 	"seqolah-qu/entities/dto"
 	"seqolah-qu/entities/models"
+	"seqolah-qu/helpers"
+	"seqolah-qu/middlewares"
 	"seqolah-qu/repositories"
 )
 
@@ -32,5 +34,17 @@ func (s *AuthServiceImpl) Register(data dto.RegisterDto) interface{} {
 
 func (s *AuthServiceImpl) Login(data dto.LoginDto) interface{} {
 	// login logic
-	return nil
+	existingUser, _ := s.UserRepository.FindOne(models.User{Email: data.Email})
+
+	if existingUser.Email == "" {
+		return nil
+	}
+
+	isMatch := helpers.ComparePassword(data.Password, existingUser.Password)
+
+	if !isMatch {
+		return nil
+	}
+
+	return middlewares.GenerateJwtToken(map[string]interface{}{"id": existingUser.Id, "role": existingUser.Role})
 }
